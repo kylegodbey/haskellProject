@@ -1,3 +1,5 @@
+import Data.MarkovChain
+
 -- | Main entry point to the application.
 module Main where
 
