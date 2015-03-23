@@ -1,7 +1,7 @@
 import Data.MarkovChain
 
 -- | Main entry point to the application.
-module Main where
+-- | module Main where
 
 -- | The main entry point.
 main :: IO ()
