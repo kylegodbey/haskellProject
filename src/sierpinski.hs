@@ -21,7 +21,7 @@ side = 100.0
 -- Sierpinski Triangles
 picture_sierpinski :: Int -> Float -> Picture	
 picture_sierpinski degree time
-	= sierpinski degree time (dim $ dim blue)
+	= sierpinski degree time (aquamarine)
 
 -- Base of triangles
 base_tri :: Color -> Picture
