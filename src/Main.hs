@@ -1,57 +1,53 @@
 import Graphics.Gloss
-import System.Random
+import System.IO.Unsafe
+import System.Environment
+import Data.Char
 
 -- | Main entry point to the application.
 -- | module Main where
 
 -- | The main entry point.
 
-main =  animate (InWindow "Wheel" (500, 650) (20,  20))
-		white (picture 5)
+main =  animate (InWindow "Sierpinski Triangles" (500, 650) (20,  20))
+		black (picture_sierpinski getDegree)
 
+getDegree :: Int
+getDegree = (digitToInt (head (head (unsafePerformIO (getArgs)))))
 
+side :: Float
+side = 100.0
 
--- | Tree Fractal.
---	Based on ANUPlot code by Clem Baker-Finch.
---	
+	
+-- Sierpinski Triangles
+picture_sierpinski :: Int -> Float -> Picture	
+picture_sierpinski degree time
+	= sierpinski degree time (dim $ dim blue)
 
-
-
-
--- The picture is a tree fractal, graded from brown to green
-picture :: Int -> Float -> Picture	
-picture degree time
-	= wheel degree time (dim $ dim blue)
-
-
--- Base of circles
-base :: Color -> Picture
-base color 
+-- Base of triangles
+base_tri :: Color -> Picture
+base_tri color 
 	= Color color
-	$ Circle 100
+	$ Polygon [
+	((-(side/2)),0),
+        ((side/2),0),
+        (0,(-(((sqrt 3.0)/2)*side)))]
 
 
--- start the circle fractal.
-wheel 	:: Int 		-- Fractal degree
-	-> Float	-- time
-	-> Color 	-- Color for the circle
-	-> Picture
-
-wheel 0 time color = base color
-wheel n time color 
- = let	concentric 
-		= Rotate (sin time*pi)
-		$ Scale 0.5 0.5 
-		$ wheel (n-1) (- time) (mix color)
-   in	Pictures
-		[ base color
-		, Line [(0,0),(0,time*pi)]
-		, Translate (randomRIO (1, 240)) (randomRIO (1, 240)) concentric]
 		
+sierpinski :: Int -> Float -> Color -> Picture
+sierpinski 0 time color = base_tri color
+sierpinski n time color
+ = let inner
+            = Scale 0.5 0.5
+            $ sierpinski (n-1) time (mix color)
+   in   Pictures
+                [base_tri color
+                , Rotate (180 * (sin (time/2))) $ Translate (-(side/2)) (-((((sqrt 3.0)/2)*side)/2)) $ inner
+                , Rotate (180 * (sin (time/2))) $ Translate ((side/2)) (-((((sqrt 3.0)/2)*side)/2)) $ inner
+                , Rotate (360 * (sin (time/2))) $ Translate (0) (((((sqrt 3.0)/2)*side)/2)) $ inner] 
 
 
 
-
--- Mix the color with something
+--
 mix :: Color -> Color
-mix c = mixColors 1 10 black c
+mix c = mixColors 1 2 red c
